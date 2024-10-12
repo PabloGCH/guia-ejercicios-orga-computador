@@ -17,7 +17,7 @@
     16                                                        ; quede alineado a un multiplo de 16 bytes (16x3=48)
     17                                  
     18                                  llamada:
-    19 0000000E E8(00000000)              call puts ; Invoco a la funcion PUTS de C
-    20 00000013 4883C428                  add rsp, 0x28 ; Recupero el espacio reservado
+    19 0000000E E8(00000000)              call puts           ; Invoco a la funcion PUTS de C
+    20 00000013 4883C428                  add rsp, 0x28       ; Recupero el espacio reservado
     21                                  fin:
-    22 00000017 C3                        ret ; Cierre del programa principal
+    22 00000017 C3                        ret                 ; Cierre del programa principal
