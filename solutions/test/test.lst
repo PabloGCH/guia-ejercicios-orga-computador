@@ -1,0 +1,11 @@
+     1                                  section .data
+     2 00000000 00                        exit_code     db      0; Codigo de finalizacion del programa
+     3 00000001 3C00000000000000          sys_call      dq      60; syscall para terminar el programa
+     4                                  
+     5                                  section .text
+     6                                    global    main
+     7                                  
+     8                                  main:
+     9 00000000 488B0425[01000000]        mov     rax,      [sys_call]      ; Se mueve a RAX el código de syscall para Exit()
+    10 00000008 488B3C25[00000000]        mov     rdi,      [exit_code]     ; Se mueve a RDI el código de finalización del programa (0)
+    11 00000010 0F05                      syscall                           ; Se realiza la llamada al sistema operativo

@@ -1,0 +1,23 @@
+     1                                  extern puts
+     2                                  
+     3                                  section .data
+     4 00000000 486F6C6100                cadena db "Hola", 0
+     5                                  
+     6                                  section .text
+     7                                    global main
+     8                                  
+     9                                  
+    10                                  main:
+    11 00000000 48BF-                     mov rdi,   cadena   ; Paso la posicion de inicio del String
+    11 00000002 [0000000000000000] 
+    12 0000000A 4883EC28                  sub rsp,   0x28     ; Reservo 40 bytes (32+8) para reservar 32 bytes
+    13                                                        ; de shadow space (necesario en windows) y agrego 8
+    14                                                        ; bytes para que sumado a los 8 bytes de la posicion de
+    15                                                        ; retorno de puts sea un total de 48 bytes y el stack
+    16                                                        ; quede alineado a un multiplo de 16 bytes (16x3=48)
+    17                                  
+    18                                  llamada:
+    19 0000000E E8(00000000)              call puts ; Invoco a la funcion PUTS de C
+    20 00000013 4883C428                  add rsp, 0x28 ; Recupero el espacio reservado
+    21                                  fin:
+    22 00000017 C3                        ret ; Cierre del programa principal
