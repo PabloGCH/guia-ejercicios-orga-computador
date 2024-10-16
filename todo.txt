@@ -1,0 +1,23 @@
+Realizar un programa que resuelva XY  teniendo en cuenta que tanto X e Y pueden ser positivos o negativos.
+
+PASOS A SEGUIR
+
+- Recibir x como input
+- Recibir y como input
+
+- Parsear x a entero
+- Parsear y a entero
+
+- Se copia valor de x e y en variable auxiliar y se calcula el not
+
+- inicializo resultado resultado potencia
+- Ciclo y veces
+  - inicializo resultado multiplicacion
+  - Ciclo x veces
+  - sumo reultado a resultado potencia
+
+- Si y era negativo divido 1 por el numero
+
+- Si x era negativo calculo not del resultado
+
+
