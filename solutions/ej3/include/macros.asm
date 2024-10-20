@@ -9,7 +9,7 @@
 ;Recibe un string y un argumento
 %macro printArg 2
   mov     rdi,    %1
-  mov     rsi,    %2
+  mov     rsi,    [%2]
   sub     rsp,    8
   call    printf
   add     rsp,    8

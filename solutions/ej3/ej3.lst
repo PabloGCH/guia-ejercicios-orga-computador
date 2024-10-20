@@ -1,84 +1,209 @@
-     1                                  ;Recibe un string y lo imprime
-     2                                  %macro print 1
-     3                                    mov     rdi,    %1
-     4                                    sub     rsp,    8
-     5                                    call    printf
-     6                                    add     rsp,    8
-     7                                  %endmacro
-     8                                  
-     9                                  ;Recibe un string y un argumento
-    10                                  %macro printArg 2
-    11                                    mov     rdi,    %1
-    12                                    mov     rsi,    %2
-    13                                    sub     rsp,    8
-    14                                    call    printf
-    15                                    add     rsp,    8
-    16                                  %endmacro
-    17                                  
-    18                                  
-    19                                  global main
-    20                                  extern gets
-    21                                  extern printf
-    22                                  extern sscanf
-    23                                  
-    24                                  
-    25                                  
-    26                                  section .data
-    27 00000000 496E67726573652065-       xInputMsg       db    "Ingrese el valor de x: ", 0
-    27 00000009 6C2076616C6F722064-
-    27 00000012 6520783A2000       
-    28 00000018 496E67726573652065-       yInputMsg       db    "Ingrese el valor de y: ", 0
-    28 00000021 6C2076616C6F722064-
-    28 0000002A 6520793A2000       
-    29 00000030 456C20726573756C74-       resultMsgPos    db    "El resultado es: %li", 10, 0
-    29 00000039 61646F2065733A2025-
-    29 00000042 6C690A00           
-    30 00000046 456C20726573756C74-       resultMsgNeg    db    "El resultado es: 1/%li", 10, 0
-    30 0000004F 61646F2065733A2031-
-    30 00000058 2F256C690A00       
-    31 0000005E 256C6900                  format          db    "%li", 0
-    32 00000062 496E677265736F3A20-       input           db    "Ingreso: %s", 10, 0
-    32 0000006B 25730A00           
-    33                                  
-    34                                  
-    35                                  section .bss
-    36 00000000 ????????????????          xValue      resq 1
-    37 00000008 ????????????????          yValue      resq 1
-    38 00000010 ????????????????          result      resq 1
-    39 00000018 <res 64h>                 buffer      resb 100
-    40                                  
-    41                                  
-    42                                  section .text
-    43                                  main:
-    44                                    print xInputMsg
-     3 00000000 48BF-               <1>  mov rdi, %1
-     3 00000002 [0000000000000000]  <1>
-     4 0000000A 4883EC08            <1>  sub rsp, 8
-     5 0000000E E8(00000000)        <1>  call printf
-     6 00000013 4883C408            <1>  add rsp, 8
-    45                                  
-    46 00000017 48BF-                     mov     rdi,    buffer
-    46 00000019 [1800000000000000] 
-    47                                  
-    48 00000021 4883EC08                  sub     rsp,    8
-    49 00000025 E8(00000000)              call    gets
-    50 0000002A 4883C408                  add     rsp,    8
-    51                                    
-    52                                    ;mov     rdi,    buffer
-    53                                    ;mov     rsi,    format
-    54                                    ;mov     rcx,    xValue
-    55                                  
-    56                                    ;sub     rsp,    8
-    57                                    ;call    sscanf
-    58                                    ;add     rsp,    8
-    59                                    
-    60 0000002E 48BF-                     mov     rdi,    input
-    60 00000030 [6200000000000000] 
-    61 00000038 48BE-                     mov     rsi,    buffer
-    61 0000003A [1800000000000000] 
-    62 00000042 4883EC08                  sub     rsp,    8
-    63 00000046 E8(00000000)              call    printf
-    64 0000004B 4883C408                  add     rsp,    8
-    65                                    
-    66 0000004F C3                        ret
-    67                                  
+     1                                  global main
+     2                                  %include "macros.asm"
+     1                              <1> ;Recibe un string y lo imprime
+     2                              <1> %macro print 1
+     3                              <1>   mov     rdi,    %1
+     4                              <1>   sub     rsp,    8
+     5                              <1>   call    printf
+     6                              <1>   add     rsp,    8
+     7                              <1> %endmacro
+     8                              <1> 
+     9                              <1> ;Recibe un string y un argumento
+    10                              <1> %macro printArg 2
+    11                              <1>   mov     rdi,    %1
+    12                              <1>   mov     rsi,    [%2]
+    13                              <1>   sub     rsp,    8
+    14                              <1>   call    printf
+    15                              <1>   add     rsp,    8
+    16                              <1> %endmacro
+    17                              <1> 
+    18                              <1> ;Recibe:
+    19                              <1> ;     un string que se imprime para pedir un valor
+    20                              <1> ;     un buffer donde se guarda el valor
+    21                              <1> ;     un formato para sscanf
+    22                              <1> ;     un puntero a la variable donde se guarda el valor
+    23                              <1> %macro read 4
+    24                              <1>   print %1
+    25                              <1> 
+    26                              <1>   mov     rdi,    %2
+    27                              <1> 
+    28                              <1>   sub     rsp,    8
+    29                              <1>   call    gets
+    30                              <1>   add     rsp,    8
+    31                              <1> 
+    32                              <1>   mov     rdi,    %2
+    33                              <1>   mov     rsi,    %3
+    34                              <1>   mov     rdx,    %4
+    35                              <1> 
+    36                              <1>   sub     rsp,    8
+    37                              <1>   call    sscanf
+    38                              <1>   add     rsp,    8
+    39                              <1> 
+    40                              <1> %endmacro
+    41                              <1> 
+    42                              <1> extern  printf
+    43                              <1> extern  gets
+    44                              <1> extern  sscanf
+    45                              <1> 
+    46                              <1> 
+    47                              <1> 
+    48                              <1> 
+    49                              <1> 
+    50                              <1> 
+     3                                  
+     4                                  
+     5                                  section .data
+     6 00000000 496E67726573652065-       xInputMsg       db    "Ingrese el valor de x: ", 0
+     6 00000009 6C2076616C6F722064-
+     6 00000012 6520783A2000       
+     7 00000018 496E67726573652065-       yInputMsg       db    "Ingrese el valor de y: ", 0
+     7 00000021 6C2076616C6F722064-
+     7 0000002A 6520793A2000       
+     8 00000030 456C20726573756C74-       resultMsgPos    db    "El resultado es: %li", 10, 0
+     8 00000039 61646F2065733A2025-
+     8 00000042 6C690A00           
+     9 00000046 456C20726573756C74-       resultMsgNeg    db    "El resultado es: 1/%li", 10, 0
+     9 0000004F 61646F2065733A2031-
+     9 00000058 2F256C690A00       
+    10 0000005E 256C6900                  format          db    "%li", 0
+    11                                  
+    12                                  
+    13                                  section .bss
+    14 00000000 ????????????????          xValue      resq 1
+    15 00000008 ????????????????          yValue      resq 1
+    16 00000010 ????????????????          result      resq 1
+    17 00000018 <res 64h>                 buffer      resb 100
+    18 0000007C ????????????????          counter     resq 1
+    19                                  
+    20                                  
+    21                                  section .text
+    22                                  main:
+    23                                    ;Consigue los valores de x e y
+    24                                    read xInputMsg, buffer, format, xValue
+    24                              <1>  print %1
+     3 00000000 48BF-               <2>  mov rdi, %1
+     3 00000002 [0000000000000000]  <2>
+     4 0000000A 4883EC08            <2>  sub rsp, 8
+     5 0000000E E8(00000000)        <2>  call printf
+     6 00000013 4883C408            <2>  add rsp, 8
+    25                              <1> 
+    26 00000017 48BF-               <1>  mov rdi, %2
+    26 00000019 [1800000000000000]  <1>
+    27                              <1> 
+    28 00000021 4883EC08            <1>  sub rsp, 8
+    29 00000025 E8(00000000)        <1>  call gets
+    30 0000002A 4883C408            <1>  add rsp, 8
+    31                              <1> 
+    32 0000002E 48BF-               <1>  mov rdi, %2
+    32 00000030 [1800000000000000]  <1>
+    33 00000038 48BE-               <1>  mov rsi, %3
+    33 0000003A [5E00000000000000]  <1>
+    34 00000042 48BA-               <1>  mov rdx, %4
+    34 00000044 [0000000000000000]  <1>
+    35                              <1> 
+    36 0000004C 4883EC08            <1>  sub rsp, 8
+    37 00000050 E8(00000000)        <1>  call sscanf
+    38 00000055 4883C408            <1>  add rsp, 8
+    39                              <1> 
+    25                                    read yInputMsg, buffer, format, yValue
+    24                              <1>  print %1
+     3 00000059 48BF-               <2>  mov rdi, %1
+     3 0000005B [1800000000000000]  <2>
+     4 00000063 4883EC08            <2>  sub rsp, 8
+     5 00000067 E8(00000000)        <2>  call printf
+     6 0000006C 4883C408            <2>  add rsp, 8
+    25                              <1> 
+    26 00000070 48BF-               <1>  mov rdi, %2
+    26 00000072 [1800000000000000]  <1>
+    27                              <1> 
+    28 0000007A 4883EC08            <1>  sub rsp, 8
+    29 0000007E E8(00000000)        <1>  call gets
+    30 00000083 4883C408            <1>  add rsp, 8
+    31                              <1> 
+    32 00000087 48BF-               <1>  mov rdi, %2
+    32 00000089 [1800000000000000]  <1>
+    33 00000091 48BE-               <1>  mov rsi, %3
+    33 00000093 [5E00000000000000]  <1>
+    34 0000009B 48BA-               <1>  mov rdx, %4
+    34 0000009D [0800000000000000]  <1>
+    35                              <1> 
+    36 000000A5 4883EC08            <1>  sub rsp, 8
+    37 000000A9 E8(00000000)        <1>  call sscanf
+    38 000000AE 4883C408            <1>  add rsp, 8
+    39                              <1> 
+    26                                  
+    27 000000B2 4883EC08                  sub rsp, 8
+    28                                    ;Inicializa el contador
+    29 000000B6 E80F000000                call initCounter
+    30                                    ;Calcula la potencia
+    31 000000BB E83A000000                call powerOf
+    32                                    ;Imprime el resultado
+    33 000000C0 E865000000                call printResult
+    34 000000C5 4883C408                  add rsp, 8
+    35 000000C9 C3                        ret
+    36                                  
+    37                                  
+    38                                  
+    39                                  
+    40                                  ;INICIALIZACION DE CONTADOR
+    41                                  initCounter:
+    42 000000CA 488B0425[08000000]        mov rax, [yValue]
+    43 000000D2 48890425[7C000000]        mov qword[counter], rax
+    44                                  
+    45 000000DA 48833C25[7C000000]-       cmp qword[counter], 0
+    45 000000E2 00                 
+    46 000000E3 7C01                      jl changeCounterSign
+    47 000000E5 C3                          ret
+    48                                  
+    49                                    changeCounterSign:
+    50 000000E6 488B0425[7C000000]          mov rax, [counter]
+    51 000000EE 48F7D8                      neg rax
+    52 000000F1 48890425[7C000000]          mov [counter], rax
+    53 000000F9 C3                          ret
+    54                                  
+    55                                  ; CALCULO DE POTENCIA
+    56                                  powerOf:
+    57 000000FA 488B0425[00000000]        mov rax, [xValue]
+    58 00000102 488B1C25[00000000]        mov rbx, [xValue]
+    59                                  
+    60                                    multiply:
+    61 0000010A 480FAFC3                    imul rax, rbx
+    62 0000010E 48FF0C25[7C000000]          dec qword[counter]
+    63 00000116 48833C25[7C000000]-         cmp qword[counter], 1
+    63 0000011E 01                 
+    64 0000011F 7FE9                        jg multiply
+    65                                  
+    66 00000121 48890425[10000000]        mov qword[result], rax
+    67 00000129 C3                        ret
+    68                                  
+    69                                  ; IMPRESION DE RESULTADO
+    70                                  
+    71                                  printResult:
+    72 0000012A 48833C25[08000000]-       cmp qword[yValue], 0
+    72 00000132 00                 
+    73 00000133 7C20                      jl printNegative
+    74                                      printArg resultMsgPos, result
+    11 00000135 48BF-               <1>  mov rdi, %1
+    11 00000137 [3000000000000000]  <1>
+    12 0000013F 488B3425[10000000]  <1>  mov rsi, [%2]
+    13 00000147 4883EC08            <1>  sub rsp, 8
+    14 0000014B E8(00000000)        <1>  call printf
+    15 00000150 4883C408            <1>  add rsp, 8
+    75 00000154 C3                          ret
+    76                                  
+    77                                    printNegative:
+    78 00000155 48F71C25[10000000]          neg qword[result]
+    79                                      printArg resultMsgNeg, result
+    11 0000015D 48BF-               <1>  mov rdi, %1
+    11 0000015F [4600000000000000]  <1>
+    12 00000167 488B3425[10000000]  <1>  mov rsi, [%2]
+    13 0000016F 4883EC08            <1>  sub rsp, 8
+    14 00000173 E8(00000000)        <1>  call printf
+    15 00000178 4883C408            <1>  add rsp, 8
+    80 0000017C C3                          ret
+    81                                  
+    82                                  
+    83                                  
+    84                                  
+    85                                  
+    86                                  

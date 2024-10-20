@@ -23,6 +23,7 @@ main:
   ;Consigue los valores de x e y
   read xInputMsg, buffer, format, xValue
   read yInputMsg, buffer, format, yValue
+
   sub rsp, 8
   ;Inicializa el contador
   call initCounter
@@ -38,7 +39,7 @@ main:
 
 ;INICIALIZACION DE CONTADOR
 initCounter:
-  mov rax, yValue
+  mov rax, [yValue]
   mov qword[counter], rax
 
   cmp qword[counter], 0
@@ -68,13 +69,12 @@ powerOf:
 ; IMPRESION DE RESULTADO
 
 printResult:
-  cmp qword[result], 0
+  cmp qword[yValue], 0
   jl printNegative
     printArg resultMsgPos, result
     ret
 
   printNegative:
-    neg qword[result]
     printArg resultMsgNeg, result
     ret
 
