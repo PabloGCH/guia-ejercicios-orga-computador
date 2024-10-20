@@ -1,41 +1,25 @@
-
-%macro print 1
-  mov   rdi, %1
-  sub   rsp, 8
-  call  printf
-  add   rsp, 8
-%endmacro
-
-%macro get 1
-  mov   rdi, %1
-  sub   rsp, 8
-  call  gets
-  add   rsp, 8
-%endmacro
-
-
-extern printf
-extern gets
 global main
+%include "macros.asm"
 
 
 section .data
-  xInputMsg     db    "Ingrese el valor de x: ", 0
-  yInputMsg     db    "Ingrese el valor de y: ", 0
+  xInputMsg       db    "Ingrese el valor de x: ", 0
+  yInputMsg       db    "Ingrese el valor de y: ", 0
+  resultMsgPos    db    "El resultado es: %li", 10, 0
+  resultMsgNeg    db    "El resultado es: 1/%li", 10, 0
+  format          db    "%li", 0
 
 
 section .bss
-  xInput    resb  16      
-  yInput    resb  16
+  xValue      resq 1
+  yValue      resq 1
+  result      resq 1
+  buffer      resb 100
+
 
 section .text
-
 main:
-  print   xInputMsg
-  get     xInput
-  print   xInput
-  ret 
-
-
-
+  read xInputMsg, buffer, format, xValue
+  read yInputMsg, buffer, format, yValue
+  ret
 

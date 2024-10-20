@@ -1,0 +1,15 @@
+     1                                  global main
+     2                                  extern puts
+     3                                  
+     4                                  section .data
+     5 00000000 4F7267616E697A6163-       message db "Organizacion del Computador", 0
+     5 00000009 696F6E2064656C2043-
+     5 00000012 6F6D70757461646F72-
+     5 0000001B 00                 
+     6                                  
+     7                                  section .text
+     8                                  main:
+     9 00000000 48BF-                     mov   rdi,    message
+     9 00000002 [0000000000000000] 
+    10 0000000A E8(00000000)              call  puts
+    11 0000000F C3                        ret

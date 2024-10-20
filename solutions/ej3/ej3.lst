@@ -1,0 +1,84 @@
+     1                                  ;Recibe un string y lo imprime
+     2                                  %macro print 1
+     3                                    mov     rdi,    %1
+     4                                    sub     rsp,    8
+     5                                    call    printf
+     6                                    add     rsp,    8
+     7                                  %endmacro
+     8                                  
+     9                                  ;Recibe un string y un argumento
+    10                                  %macro printArg 2
+    11                                    mov     rdi,    %1
+    12                                    mov     rsi,    %2
+    13                                    sub     rsp,    8
+    14                                    call    printf
+    15                                    add     rsp,    8
+    16                                  %endmacro
+    17                                  
+    18                                  
+    19                                  global main
+    20                                  extern gets
+    21                                  extern printf
+    22                                  extern sscanf
+    23                                  
+    24                                  
+    25                                  
+    26                                  section .data
+    27 00000000 496E67726573652065-       xInputMsg       db    "Ingrese el valor de x: ", 0
+    27 00000009 6C2076616C6F722064-
+    27 00000012 6520783A2000       
+    28 00000018 496E67726573652065-       yInputMsg       db    "Ingrese el valor de y: ", 0
+    28 00000021 6C2076616C6F722064-
+    28 0000002A 6520793A2000       
+    29 00000030 456C20726573756C74-       resultMsgPos    db    "El resultado es: %li", 10, 0
+    29 00000039 61646F2065733A2025-
+    29 00000042 6C690A00           
+    30 00000046 456C20726573756C74-       resultMsgNeg    db    "El resultado es: 1/%li", 10, 0
+    30 0000004F 61646F2065733A2031-
+    30 00000058 2F256C690A00       
+    31 0000005E 256C6900                  format          db    "%li", 0
+    32 00000062 496E677265736F3A20-       input           db    "Ingreso: %s", 10, 0
+    32 0000006B 25730A00           
+    33                                  
+    34                                  
+    35                                  section .bss
+    36 00000000 ????????????????          xValue      resq 1
+    37 00000008 ????????????????          yValue      resq 1
+    38 00000010 ????????????????          result      resq 1
+    39 00000018 <res 64h>                 buffer      resb 100
+    40                                  
+    41                                  
+    42                                  section .text
+    43                                  main:
+    44                                    print xInputMsg
+     3 00000000 48BF-               <1>  mov rdi, %1
+     3 00000002 [0000000000000000]  <1>
+     4 0000000A 4883EC08            <1>  sub rsp, 8
+     5 0000000E E8(00000000)        <1>  call printf
+     6 00000013 4883C408            <1>  add rsp, 8
+    45                                  
+    46 00000017 48BF-                     mov     rdi,    buffer
+    46 00000019 [1800000000000000] 
+    47                                  
+    48 00000021 4883EC08                  sub     rsp,    8
+    49 00000025 E8(00000000)              call    gets
+    50 0000002A 4883C408                  add     rsp,    8
+    51                                    
+    52                                    ;mov     rdi,    buffer
+    53                                    ;mov     rsi,    format
+    54                                    ;mov     rcx,    xValue
+    55                                  
+    56                                    ;sub     rsp,    8
+    57                                    ;call    sscanf
+    58                                    ;add     rsp,    8
+    59                                    
+    60 0000002E 48BF-                     mov     rdi,    input
+    60 00000030 [6200000000000000] 
+    61 00000038 48BE-                     mov     rsi,    buffer
+    61 0000003A [1800000000000000] 
+    62 00000042 4883EC08                  sub     rsp,    8
+    63 00000046 E8(00000000)              call    printf
+    64 0000004B 4883C408                  add     rsp,    8
+    65                                    
+    66 0000004F C3                        ret
+    67                                  
