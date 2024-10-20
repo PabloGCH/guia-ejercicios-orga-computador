@@ -15,11 +15,71 @@ section .bss
   yValue      resq 1
   result      resq 1
   buffer      resb 100
+  counter     resq 1
 
 
 section .text
 main:
+  ;Consigue los valores de x e y
   read xInputMsg, buffer, format, xValue
   read yInputMsg, buffer, format, yValue
+  sub rsp, 8
+  ;Inicializa el contador
+  call initCounter
+  ;Calcula la potencia
+  call powerOf
+  ;Imprime el resultado
+  call printResult
+  add rsp, 8
   ret
+
+
+
+
+;INICIALIZACION DE CONTADOR
+initCounter:
+  mov rax, yValue
+  mov qword[counter], rax
+
+  cmp qword[counter], 0
+  jl changeCounterSign
+    ret
+
+  changeCounterSign:
+    mov rax, [counter]
+    neg rax
+    mov [counter], rax
+    ret
+
+; CALCULO DE POTENCIA
+powerOf:
+  mov rax, [xValue]
+  mov rbx, [xValue]
+
+  multiply:
+    imul rax, rbx
+    dec qword[counter]
+    cmp qword[counter], 1
+    jg multiply
+
+  mov qword[result], rax
+  ret
+
+; IMPRESION DE RESULTADO
+
+printResult:
+  cmp qword[result], 0
+  jl printNegative
+    printArg resultMsgPos, result
+    ret
+
+  printNegative:
+    neg qword[result]
+    printArg resultMsgNeg, result
+    ret
+
+
+
+
+
 

@@ -39,6 +39,9 @@
 
 %endmacro
 
+extern  printf
+extern  gets
+extern  sscanf
 
 
 
