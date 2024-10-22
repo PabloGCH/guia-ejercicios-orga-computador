@@ -50,25 +50,33 @@
     47                              <1> 
      4                                  
      5                                  section .data
-     6 00000000 496E67726573652075-       msg             db      "Ingrese un numero: ", 0
+     6 00000000 496E67726573652075-       msg               db      "Ingrese un numero: ", 0
      6 00000009 6E206E756D65726F3A-
      6 00000012 2000               
-     7 00000014 256C6900                  format          db      "%li", 0
-     8 00000018 496E677265736F3A20-       msgInput        db      "Ingreso: %li", 10, 0
+     7 00000014 256C6900                  format            db      "%li", 0
+     8 00000018 496E677265736F3A20-       msgInput          db      "Ingreso: %li", 10, 0
      8 00000021 256C690A00         
-     9 00000026 0000000000000000          iterations      dq      0
-    10                                  
-    11                                  section .bss
-    12 00000000 <res 64h>                 buffer          resb    100
-    13 00000064 ????????????????          number          resq    1
-    14 0000006C <res 20h>                 numberVector    times 4 resq 1
-    15                                  
-    16                                  
-    17                                  section .text
-    18                                  
-    19                                  main:
-    20                                    iterate:
-    21                                      read  msg, buffer, format, number
+     9 00000026 0000000000000000          counter           dq      0
+    10 0000002E 0000000000000000          auxCounter        dq      0
+    11 00000036 0400000000000000          numberOfElements  dq      4
+    12 0000003E 0000000000000000          swapped           dq      0
+    13                                  
+    14                                  
+    15                                  section .bss
+    16 00000000 <res 64h>                 buffer                  resb    100
+    17 00000064 ????????????????          number                  resq    1
+    18 0000006C <res 20h>                 numberVector            times   4 resq 1 ; IMPORTANTE: TIMES DEBE SER IGUAL A numberOfElements
+    19 0000008C ????????????????          currentNumberAddress    resq 1
+    20 00000094 ????????????????          nextNumberAddress       resq 1
+    21                                  
+    22                                  
+    23                                  
+    24                                  section .text
+    25                                  
+    26                                  main:
+    27                                    ;INGRESO DE DATOS
+    28                                    iterate:
+    29                                      read  msg, buffer, format, number
     25                              <1>  print %1
      3 00000000 48BF-               <2>  mov rdi, %1
      3 00000002 [0000000000000000]  <2>
@@ -94,45 +102,106 @@
     38 00000050 E8(00000000)        <1>  call sscanf
     39 00000055 4883C408            <1>  add rsp, 8
     40                              <1> 
-    22 00000059 488B0425[64000000]          mov   rax, [number]       ; Nuevo número
-    23                                  
-    24 00000061 48BA-                       mov   rdx, numberVector   ; Dirección del vector
-    24 00000063 [6C00000000000000] 
-    25 0000006B 488B0C25[26000000]          mov   rcx, [iterations]   ; Iteración, indice del vector
-    26 00000073 486BC908                    imul  rcx, rcx, 8         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
-    27 00000077 4801CA                      add   rdx, rcx            ; Sumamos el offset a la dirección del vector
-    28 0000007A 488902                      mov   [rdx], rax          ; Guardamos el número en el vector
-    29                                      
-    30 0000007D 48FF0425[26000000]          inc qword[iterations]
-    31 00000085 48833C25[26000000]-         cmp qword[iterations], 4
-    31 0000008D 04                 
-    32 0000008E 0F8C6CFFFFFF                jl iterate
-    33                                  
-    34 00000094 48C70425[26000000]-       mov qword[iterations], 0
-    34 0000009C 00000000           
-    35                                    printAll:
-    36 000000A0 48BA-                       mov   rdx, numberVector   ; Dirección del vector
-    36 000000A2 [6C00000000000000] 
-    37 000000AA 488B0C25[26000000]          mov   rcx, [iterations]   ; Iteración, indice del vector
-    38 000000B2 486BC908                    imul  rcx, rcx, 8         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
-    39 000000B6 4801CA                      add   rdx, rcx            ; Sumamos el offset a la dirección del vector
-    40                                  
-    41                                      printArg msgInput, rdx
-    11 000000B9 48BF-               <1>  mov rdi, %1
-    11 000000BB [1800000000000000]  <1>
-    12 000000C3 488B32              <1>  mov rsi, [%2]
-    13 000000C6 4883EC08            <1>  sub rsp, 8
-    14 000000CA E8(00000000)        <1>  call printf
-    15 000000CF 4883C408            <1>  add rsp, 8
+    30 00000059 488B0425[64000000]          mov   rax, [number]       ; Nuevo número
+    31                                  
+    32 00000061 48BA-                       mov   rdx, numberVector   ; Dirección del vector
+    32 00000063 [6C00000000000000] 
+    33 0000006B 488B0C25[26000000]          mov   rcx, [counter]      ; Iteración, indice del vector
+    34 00000073 486BC908                    imul  rcx, rcx, 8         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
+    35 00000077 4801CA                      add   rdx, rcx            ; Sumamos el offset a la dirección del vector
+    36 0000007A 488902                      mov   [rdx], rax          ; Guardamos el número en el vector
+    37                                      
+    38 0000007D 488B0425[36000000]          mov rax, [numberOfElements]
+    39 00000085 48FF0425[26000000]          inc qword[counter]
+    40 0000008D 48390425[26000000]          cmp qword[counter], rax
+    41 00000095 0F8C65FFFFFF                jl iterate
     42                                  
-    43 000000D3 48FF0425[26000000]          inc qword[iterations]
-    44 000000DB 48833C25[26000000]-         cmp qword[iterations], 4
-    44 000000E3 04                 
-    45 000000E4 7CBA                        jl printAll
-    46 000000E6 C3                        ret
-    47                                      
-    48                                      
-    49                                  
-    50                                  
-    51                                  
-    52                                  
+    43                                    ;ORDENAMIENTO
+    44 0000009B 48C70425[26000000]-       mov qword[counter], 0
+    44 000000A3 00000000           
+    45                                    firstLoop:
+    46 000000A7 48C70425[3E000000]-         mov qword[swapped], 0
+    46 000000AF 00000000           
+    47 000000B3 48C70425[2E000000]-         mov qword[auxCounter], 0
+    47 000000BB 00000000           
+    48                                      secondLoop:
+    49                                        ;Logica de swap
+    50                                        ;--------------------------------
+    51                                        ; Si no se hay que intercambiar se saltea el swap
+    52                                        swap:
+    53                                          ;------- Consigue primer número ------------
+    54 000000BF 48BA-                           mov   rdx, numberVector                   ; Dirección del vector    
+    54 000000C1 [6C00000000000000] 
+    55 000000C9 488B0C25[2E000000]              mov   rcx, [auxCounter]                   ; Iteración, indice del vector
+    56 000000D1 486BC908                        imul  rcx, rcx, 8                         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
+    57 000000D5 4801CA                          add   rdx, rcx                            ; Sumamos el offset a la dirección del vector
+    58                                          ;--------------------------------
+    59 000000D8 488B02                          mov   rax, [rdx]                          ; Guardo el número actual
+    60 000000DB 48891425[8C000000]              mov   qword[currentNumberAddress], rdx    ; Guardo la dirección del número actual
+    61                                          ;------- Consigue segundo número ------------
+    62 000000E3 48BA-                           mov   rdx, numberVector                   ; Dirección del vector
+    62 000000E5 [6C00000000000000] 
+    63 000000ED 488B0C25[2E000000]              mov   rcx, [auxCounter]                   ; Iteración, indice del vector
+    64 000000F5 48FFC1                          inc   rcx                                 ; Siguiente número
+    65 000000F8 486BC908                        imul  rcx, rcx, 8                         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
+    66 000000FC 4801CA                          add   rdx, rcx                            ; Sumamos el offset a la dirección del vector
+    67                                          ;--------------------------------
+    68 000000FF 488B1A                          mov   rbx, [rdx]                          ; Guardo el número siguiente
+    69 00000102 48891425[94000000]              mov   qword[nextNumberAddress], rdx       ; Guardo la dirección del número siguiente
+    70                                          ;------- Compara los números ------------
+    71 0000010A 4839D8                          cmp   rax, rbx                            ; Compara los números
+    72 0000010D 7D1C                            jge   endOfSecondLoopIteration            ; Si no se deben intercambiar, termina (Esta ordenando de mayor a menor)
+    73                                          ;------- Intercambia los números ------------
+    74 0000010F 48C70425[3E000000]-             mov   qword[swapped],               1
+    74 00000117 01000000           
+    75 0000011B 48891C25[8C000000]              mov   qword[currentNumberAddress],  rbx
+    76 00000123 48890425[94000000]              mov   qword[nextNumberAddress],     rax
+    77                                        endOfSecondLoopIteration:
+    78                                          ;Si no termino el segundo loop, Continua
+    79 0000012B 488B0425[36000000]              mov   rax, [numberOfElements]
+    80 00000133 48FFC8                          dec   rax ; Decrementa rax ya que no queremos iterar con el ultimo valor (no tiene siguiente)
+    81 00000136 48FF0425[2E000000]              inc   qword[auxCounter]
+    82 0000013E 48390425[2E000000]              cmp   qword[auxCounter], rax
+    83 00000146 0F8C73FFFFFF                    jl    secondLoop
+    84                                      ;Si no se hizo ningun swap, termina
+    85 0000014C 48833C25[3E000000]-         cmp qword[swapped], 0
+    85 00000154 00                 
+    86 00000155 7420                        je printAll
+    87                                      ;Si no termino el primer loop, Continua
+    88 00000157 488B0425[36000000]          mov rax, [numberOfElements]
+    89 0000015F 48FF0425[26000000]          inc qword[counter]
+    90 00000167 48390425[26000000]          cmp qword[counter], rax
+    91 0000016F 0F8C32FFFFFF                jl firstLoop
+    92 00000175 EB00                        jmp printAll
+    93                                   
+    94                                  
+    95                                    printAll:
+    96                                      ;IMPRESION DE RESULTADOS
+    97 00000177 48C70425[26000000]-         mov qword[counter], 0
+    97 0000017F 00000000           
+    98                                      printNext:
+    99 00000183 48BA-                         mov   rdx, numberVector   ; Dirección del vector
+    99 00000185 [6C00000000000000] 
+   100 0000018D 488B0C25[26000000]            mov   rcx, [counter]   ; Iteración, indice del vector
+   101 00000195 486BC908                      imul  rcx, rcx, 8         ; Multiplicamos por 8 para obtener el offset (Corrimiento) (8 bytes por número)
+   102 00000199 4801CA                        add   rdx, rcx            ; Sumamos el offset a la dirección del vector
+   103                                  
+   104                                        printArg msgInput, rdx
+    11 0000019C 48BF-               <1>  mov rdi, %1
+    11 0000019E [1800000000000000]  <1>
+    12 000001A6 488B32              <1>  mov rsi, [%2]
+    13 000001A9 4883EC08            <1>  sub rsp, 8
+    14 000001AD E8(00000000)        <1>  call printf
+    15 000001B2 4883C408            <1>  add rsp, 8
+   105                                        
+   106 000001B6 488B0425[36000000]            mov rax, [numberOfElements]
+   107 000001BE 48FF0425[26000000]            inc qword[counter]
+   108 000001C6 48390425[26000000]            cmp qword[counter], rax
+   109 000001CE 7CB3                          jl printNext
+   110 000001D0 C3                        ret
+   111                                      
+   112                                      
+   113                                  
+   114                                  
+   115                                  
+   116                                  
