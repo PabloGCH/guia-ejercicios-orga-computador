@@ -192,18 +192,17 @@
     75 00000154 C3                          ret
     76                                  
     77                                    printNegative:
-    78 00000155 48F71C25[10000000]          neg qword[result]
-    79                                      printArg resultMsgNeg, result
-    11 0000015D 48BF-               <1>  mov rdi, %1
-    11 0000015F [4600000000000000]  <1>
-    12 00000167 488B3425[10000000]  <1>  mov rsi, [%2]
-    13 0000016F 4883EC08            <1>  sub rsp, 8
-    14 00000173 E8(00000000)        <1>  call printf
-    15 00000178 4883C408            <1>  add rsp, 8
-    80 0000017C C3                          ret
+    78                                      printArg resultMsgNeg, result
+    11 00000155 48BF-               <1>  mov rdi, %1
+    11 00000157 [4600000000000000]  <1>
+    12 0000015F 488B3425[10000000]  <1>  mov rsi, [%2]
+    13 00000167 4883EC08            <1>  sub rsp, 8
+    14 0000016B E8(00000000)        <1>  call printf
+    15 00000170 4883C408            <1>  add rsp, 8
+    79 00000174 C3                          ret
+    80                                  
     81                                  
     82                                  
     83                                  
     84                                  
     85                                  
-    86                                  
