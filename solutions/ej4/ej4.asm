@@ -35,6 +35,7 @@ main:
     add   rdx, rcx            ; Sumamos el offset a la dirección del vector
     mov   [rdx], rax          ; Guardamos el número en el vector
     
+    ; Si quedan elementos por ingresar, continua
     mov rax, [numberOfElements]
     inc qword[counter]
     cmp qword[counter], rax
@@ -73,9 +74,9 @@ main:
         ;------- Intercambia los números ------------
         mov   qword[swapped],               1
         mov   rdx, [currentNumberAddress]
-        mov   [rdx],  rbx
+        mov   [rdx],  rbx                         ; Guarda el número siguiente en la dirección del número actual
         mov   rdx, [nextNumberAddress]
-        mov   [rdx],  rax
+        mov   [rdx],  rax                         ; Guarda el número actual en la dirección del número siguiente
       endOfSecondLoopIteration:
         ;Si no termino el segundo loop, Continua
         mov   rax, [numberOfElements]
