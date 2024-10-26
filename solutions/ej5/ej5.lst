@@ -51,11 +51,200 @@
      4                                  
      5                                  
      6                                  section .data
-     7 00000000 FCFF                      numbers     dw   -4
-     8                                  
-     9                                  
-    10                                  section .text
-    11                                  main:
-    12 00000000 48B8-                     mov   rax,  numbers
-    12 00000002 [0000000000000000] 
-    13                                  
+     7 00000000 0500                      numbers      dw    0000000000000101b,   
+     8 00000002 FCFF                                   dw    1111111111111100b,   
+     9 00000004 6900                                   dw    0000000001101001b,   
+    10 00000006 82FF                                   dw    1111111110000010b,   
+    11 00000008 EE01                                   dw    0000000111101110b,   
+    12 0000000A 20FC                                   dw    1111110000100000b,   
+    13 0000000C B207                                   dw    0000011110110010b,   
+    14 0000000E E0ED                                   dw    1110110111100000b,   
+    15 00000010 6A0F                                   dw    0000111101101010b,   
+    16 00000012 48F0                                   dw    1111000001001000b,   
+    17 00000014 A010                                   dw    0001000010100000b,   
+    18 00000016 11D4                                   dw    1101010000010001b,   
+    19 00000018 B705                                   dw    0000010110110111b,   
+    20 0000001A 59C9                                   dw    1100100101011001b,   
+    21 0000001C 6606                                   dw    0000011001100110b,   
+    22 0000001E DBBF                                   dw    1011111111011011b,   
+    23 00000020 2A0E                                   dw    0000111000101010b,   
+    24 00000022 9CFF                                   dw    1111111110011100b,   
+    25 00000024 2A17                                   dw    0001011100101010b,   
+    26 00000026 11EB                                   dw    1110101100010001b    
+    27                                  
+    28 00000028 1400000000000000          numberOfElements      dq    20
+    29 00000030 0080                      minPosNumber          dw    -32768                              ; - 2 ^ (16 - 1)
+    30 00000032 FF7F                      maxPosNumber          dw    32767                               ; 2 ^ (16 - 1) - 1
+    31 00000034 0000000000000000          counter               dq    0
+    32 0000003C 456C206EC3BA6D6572-       msgMin                db    "El número mínimo es: %li", 10, 0   ; hi = 16 bits
+    32 00000045 6F206DC3AD6E696D6F-
+    32 0000004E 2065733A20256C690A-
+    32 00000057 00                 
+    33 00000058 456C206EC3BA6D6572-       msgMax                db    "El número máximo es: %li", 10, 0
+    33 00000061 6F206DC3A178696D6F-
+    33 0000006A 2065733A20256C690A-
+    33 00000073 00                 
+    34 00000074 456C20746F74616C20-       msgTotal              db    "El total es: %li", 10, 0
+    34 0000007D 65733A20256C690A00 
+    35 00000086 456C2070726F6D6564-       msgAverage            db    "El promedio es: %li", 10, 0
+    35 0000008F 696F2065733A20256C-
+    35 00000098 690A00             
+    36 0000009B 4E756D65726F206163-       msgNumber             db    "Numero actual: %hi", 10, 0
+    36 000000A4 7475616C3A20256869-
+    36 000000AD 0A00               
+    37 000000AF 0000000000000000          total                 dq    0
+    38                                  
+    39                                  
+    40                                  section .bss
+    41 00000000 ????????????????          minNumber           resq  1
+    42 00000008 ????????????????          maxNumber           resq  1
+    43 00000010 ????????????????          average             resq  1
+    44 00000018 ????????????????          currentNumber       resq  1
+    45                                  
+    46                                  
+    47                                  section .text
+    48                                  main:
+    49                                    iterate:
+    50                                      ; Consigue el número actual
+    51 00000000 488B0425[34000000]          mov   rax,  qword[counter]
+    52 00000008 486BC002                    imul  rax,  rax, 2                  ; Multiplica por 2 para obtener el offset (Corrimiento) (2 bytes por elemento)
+    53 0000000C 48BA-                       mov   rdx,  numbers
+    53 0000000E [0000000000000000] 
+    54 00000016 4801C2                      add   rdx,  rax                     ; Suma el offset a la dirección del vector
+    55                                  
+    56 00000019 668B02                      mov   ax,   [rdx]                   ; Guarda el número actual
+    57                                      
+    58 0000001C 890425[18000000]            mov   dword[currentNumber], eax
+    59                                      
+    60                                      printArg msgNumber, currentNumber
+    11 00000023 48BF-               <1>  mov rdi, %1
+    11 00000025 [9B00000000000000]  <1>
+    12 0000002D 488B3425[18000000]  <1>  mov rsi, [%2]
+    13 00000035 4883EC08            <1>  sub rsp, 8
+    14 00000039 E8(00000000)        <1>  call printf
+    15 0000003E 4883C408            <1>  add rsp, 8
+    61                                  
+    62                                      ; Arma solución parcial
+    63 00000042 4883EC08                    sub rsp, 8
+    64 00000046 E83B000000                  call addToTotal
+    65 0000004B E84A000000                  call checkForMin
+    66 00000050 E867000000                  call checkForMax
+    67 00000055 4883C408                    add rsp, 8
+    68                                  
+    69 00000059 48FF0425[34000000]          inc qword[counter]
+    70 00000061 488B0425[34000000]          mov rax, qword[counter]
+    71 00000069 483B0425[28000000]          cmp rax, [numberOfElements]
+    72 00000071 7C8D                        jl  iterate
+    73                                  
+    74 00000073 4883EC08                  sub rsp, 8
+    75 00000077 E862000000                call calculateAverage
+    76 0000007C E8B7000000                call printResults
+    77 00000081 4883C408                  add rsp, 8
+    78 00000085 C3                        ret
+    79                                  
+    80                                  
+    81                                  addToTotal:
+    82 00000086 668B0425[18000000]        mov ax, [currentNumber]
+    83 0000008E 98                        cwde
+    84 0000008F 4898                      cdqe
+    85                                  
+    86 00000091 48010425[AF000000]        add qword[total], rax
+    87 00000099 C3                        ret
+    88                                  
+    89                                  checkForMin:
+    90                                    ; Si el número es menor al mínimo actual, salta a assignMin
+    91 0000009A 668B0425[18000000]        mov ax, [currentNumber]
+    92 000000A2 98                        cwde
+    93 000000A3 4898                      cdqe
+    94                                  
+    95 000000A5 488B1C25[00000000]        mov rbx, qword[minNumber]
+    96                                  
+    97 000000AD 4839D8                    cmp rax, rbx
+    98 000000B0 7C01                      jl  assignMin
+    99                                  
+   100 000000B2 C3                        ret
+   101                                    assignMin:
+   102 000000B3 48890425[00000000]          mov qword[minNumber], rax
+   103 000000BB C3                          ret
+   104                                  
+   105                                  checkForMax:
+   106                                    ; Si el número es mayor al máximo actual, salta a assignMax
+   107 000000BC 668B0425[18000000]        mov ax, [currentNumber]
+   108 000000C4 98                        cwde
+   109 000000C5 4898                      cdqe
+   110 000000C7 488B1C25[08000000]        mov rbx, qword[maxNumber]
+   111 000000CF 4839D8                    cmp rax, rbx
+   112 000000D2 7F01                      jg  assignMax
+   113 000000D4 C3                        ret
+   114                                    assignMax:
+   115 000000D5 48890425[08000000]          mov qword[maxNumber], rax
+   116 000000DD C3                          ret
+   117                                  
+   118                                  calculateAverage:
+   119                                    printArg msgTotal, total
+    11 000000DE 48BF-               <1>  mov rdi, %1
+    11 000000E0 [7400000000000000]  <1>
+    12 000000E8 488B3425[AF000000]  <1>  mov rsi, [%2]
+    13 000000F0 4883EC08            <1>  sub rsp, 8
+    14 000000F4 E8(00000000)        <1>  call printf
+    15 000000F9 4883C408            <1>  add rsp, 8
+   120                                  
+   121                                    ; Divide el total por la cantidad de números
+   122 000000FD 488B0425[AF000000]        mov rax, qword[total]
+   123 00000105 488B1C25[28000000]        mov rbx, [numberOfElements]
+   124                                    
+   125 0000010D 48F7FB                    idiv rbx
+   126                                  
+   127 00000110 48890425[10000000]        mov qword[average], rax
+   128                                  
+   129                                    printArg msgAverage, average
+    11 00000118 48BF-               <1>  mov rdi, %1
+    11 0000011A [8600000000000000]  <1>
+    12 00000122 488B3425[10000000]  <1>  mov rsi, [%2]
+    13 0000012A 4883EC08            <1>  sub rsp, 8
+    14 0000012E E8(00000000)        <1>  call printf
+    15 00000133 4883C408            <1>  add rsp, 8
+   130                                  
+   131 00000137 C3                        ret
+   132                                  
+   133                                  printResults:
+   134                                    ; Imprime los resultados: Mínimo, Máximo, Promedio
+   135                                    printArg msgTotal, total
+    11 00000138 48BF-               <1>  mov rdi, %1
+    11 0000013A [7400000000000000]  <1>
+    12 00000142 488B3425[AF000000]  <1>  mov rsi, [%2]
+    13 0000014A 4883EC08            <1>  sub rsp, 8
+    14 0000014E E8(00000000)        <1>  call printf
+    15 00000153 4883C408            <1>  add rsp, 8
+   136                                    printArg msgMin, minNumber
+    11 00000157 48BF-               <1>  mov rdi, %1
+    11 00000159 [3C00000000000000]  <1>
+    12 00000161 488B3425[00000000]  <1>  mov rsi, [%2]
+    13 00000169 4883EC08            <1>  sub rsp, 8
+    14 0000016D E8(00000000)        <1>  call printf
+    15 00000172 4883C408            <1>  add rsp, 8
+   137                                    printArg msgMax, maxNumber
+    11 00000176 48BF-               <1>  mov rdi, %1
+    11 00000178 [5800000000000000]  <1>
+    12 00000180 488B3425[08000000]  <1>  mov rsi, [%2]
+    13 00000188 4883EC08            <1>  sub rsp, 8
+    14 0000018C E8(00000000)        <1>  call printf
+    15 00000191 4883C408            <1>  add rsp, 8
+   138 00000195 C3                        ret
+   139                                  
+   140                                  
+   141                                  
+   142                                  
+   143                                  
+   144                                      
+   145                                  
+   146                                  
+   147                                  
+   148                                  
+   149                                  
+   150                                  
+   151                                  
+   152                                  
+   153                                  
+   154                                  
+   155                                  
