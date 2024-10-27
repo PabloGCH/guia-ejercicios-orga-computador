@@ -1,0 +1,102 @@
+     1                                  ; Dada una matriz de 3x3 de números almacenados en BPF c/s de 16 bits
+     2                                  ; calcule la traza e imprimirla por pantalla.
+     3                                  
+     4                                  global main
+     5                                  %include "macros.asm"
+     1                              <1> ;Recibe un string y lo imprime
+     2                              <1> %macro print 1
+     3                              <1>   mov     rdi,    %1
+     4                              <1>   sub     rsp,    8
+     5                              <1>   call    printf
+     6                              <1>   add     rsp,    8
+     7                              <1> %endmacro
+     8                              <1> 
+     9                              <1> ;Recibe un string y un argumento
+    10                              <1> %macro printArg 2
+    11                              <1>   mov     rdi,    %1
+    12                              <1>   mov     rsi,    [%2]
+    13                              <1>   sub     rsp,    8
+    14                              <1>   call    printf
+    15                              <1>   add     rsp,    8
+    16                              <1> %endmacro
+    17                              <1> 
+    18                              <1> 
+    19                              <1> ;Recibe:
+    20                              <1> ;     un string que se imprime para pedir un valor
+    21                              <1> ;     un buffer donde se guarda el valor
+    22                              <1> ;     un formato para sscanf
+    23                              <1> ;     un puntero a la variable donde se guarda el valor
+    24                              <1> %macro read 4
+    25                              <1>   print %1
+    26                              <1> 
+    27                              <1>   mov     rdi,    %2
+    28                              <1> 
+    29                              <1>   sub     rsp,    8
+    30                              <1>   call    gets
+    31                              <1>   add     rsp,    8
+    32                              <1> 
+    33                              <1>   mov     rdi,    %2
+    34                              <1>   mov     rsi,    %3
+    35                              <1>   mov     rdx,    %4
+    36                              <1> 
+    37                              <1>   sub     rsp,    8
+    38                              <1>   call    sscanf
+    39                              <1>   add     rsp,    8
+    40                              <1> 
+    41                              <1> %endmacro
+    42                              <1> 
+    43                              <1> 
+    44                              <1> extern  printf
+    45                              <1> extern  gets
+    46                              <1> extern  sscanf
+    47                              <1> 
+     6                                  
+     7                                  
+     8                                  section .data
+     9 00000000 010002000300040005-       matrix      dw    1, 2, 3, 4, 5, 6, 7, 8, 9
+     9 00000009 000600070008000900 
+    10 00000012 456C20726573756C74-       msgTrace    db    "El resultado de la traza es: %d", 10, 0
+    10 0000001B 61646F206465206C61-
+    10 00000024 207472617A61206573-
+    10 0000002D 3A2025640A00       
+    11 00000033 0000000000000000          trace       dq    0
+    12                                  
+    13                                  section .text
+    14                                  main:
+    15 00000000 BB00000000                mov   rbx,  0   ; Indice de fila
+    16 00000005 B900000000                mov   rcx,  0   ; Indice de columna
+    17                                  
+    18                                    iterate:
+    19 0000000A 48BA-                       mov   rdx, matrix             ; Guarda la dirección de la matriz
+    19 0000000C [0000000000000000] 
+    20 00000014 4889D8                      mov   rax, rbx                ; Guarda el índice de fila
+    21 00000017 486BC003                    imul  rax, 3                  ; Multiplica el índice de fila por 3 (3 elementos por fila)
+    22 0000001B 486BC002                    imul  rax, 2                  ; Multiplica el índice de fila por 2 (2 bytes por elemento)
+    23 0000001F 4801C2                      add   rdx, rax                ; Suma el índice de fila a la dirección de la matriz
+    24 00000022 4889C8                      mov   rax, rcx                ; Guarda el índice de columna
+    25 00000025 486BC002                    imul  rax, 2                  ; Multiplica el índice de columna por 2 (2 bytes por elemento)
+    26 00000029 4801C2                      add   rdx, rax                ; Suma el índice de columna a la dirección de la matriz
+    27                                      
+    28 0000002C 488B02                      mov   rax, [rdx]              ; Guarda el número actual
+    29                                  
+    30 0000002F 48010425[33000000]          add   qword[trace], rax       ; Suma el número actual a la traza
+    31                                  
+    32 00000037 48FFC3                      inc   rbx                     ; Incrementa el índice de fila
+    33 0000003A 48FFC1                      inc   rcx                     ; Incrementa el índice de columna
+    34                                  
+    35 0000003D 4883FB03                    cmp   rbx, 3                  ; Compara el índice de fila con 3
+    36 00000041 7CC7                        jl    iterate                 ; Si el índice de fila es menor a 3, repite el ciclo
+    37                                  
+    38                                    printResult:
+    39                                      printArg  msgTrace, trace     ; Imprime la traza
+    11 00000043 48BF-               <1>  mov rdi, %1
+    11 00000045 [1200000000000000]  <1>
+    12 0000004D 488B3425[33000000]  <1>  mov rsi, [%2]
+    13 00000055 4883EC08            <1>  sub rsp, 8
+    14 00000059 E8(00000000)        <1>  call printf
+    15 0000005E 4883C408            <1>  add rsp, 8
+    40 00000062 C3                        ret
+    41                                  
+    42                                  
+    43                                  
+    44                                  
